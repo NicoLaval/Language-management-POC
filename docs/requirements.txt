@@ -1,6 +1,6 @@
 sphinx>=5.0.0
 sphinx-rtd-theme>=1.0.0
-sphinx-multiversion>=0.3.0
+sphinx-multiversion>=0.2.4
 sphinxcontrib-mermaid>=0.8.0
 sphinxcontrib-plantuml>=0.3.0
 sphinx-toolbox>=3.0.0
