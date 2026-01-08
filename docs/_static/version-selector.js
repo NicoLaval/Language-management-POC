@@ -1,18 +1,12 @@
 (function() {
     'use strict';
     
-    // Liste des versions disponibles (sera générée par sphinx-multiversion)
-    // Ces versions seront détectées automatiquement depuis les branches
     const versions = ['latest', 'v2.2', 'v2.1'];
-    
-    // Détecter la version actuelle depuis l'URL
     const currentPath = window.location.pathname;
     const versionMatch = currentPath.match(/\/(v\d+\.\d+|latest)\//);
     const currentVersion = versionMatch ? versionMatch[1] : 'latest';
     
-    // Créer le sélecteur de version
     function createVersionSelector() {
-        // Vérifier si le sélecteur existe déjà
         if (document.getElementById('version-selector')) {
             return;
         }
@@ -20,7 +14,7 @@
         const selector = document.createElement('select');
         selector.id = 'version-selector';
         selector.style.cssText = 'margin: 10px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; background: white;';
-        selector.title = 'Sélectionner une version';
+        selector.title = 'Select version';
         
         versions.forEach(version => {
             const option = document.createElement('option');
@@ -34,19 +28,15 @@
         
         selector.addEventListener('change', function() {
             const selectedVersion = this.value;
-            // Remplacer la version dans l'URL
             let newPath;
             if (versionMatch) {
                 newPath = currentPath.replace(/\/(v\d+\.\d+|latest)\//, `/${selectedVersion}/`);
             } else {
-                // Si on est à la racine, ajouter la version
                 newPath = `/${selectedVersion}/index.html`;
             }
             window.location.href = newPath;
         });
         
-        // Essayer de trouver un endroit approprié pour ajouter le sélecteur
-        // Pour le thème sphinx_rtd_theme
         const navSearch = document.querySelector('.wy-side-nav-search');
         if (navSearch) {
             const wrapper = document.createElement('div');
@@ -54,12 +44,10 @@
             wrapper.appendChild(selector);
             navSearch.appendChild(wrapper);
         } else {
-            // Fallback : chercher le header ou créer un élément
             const header = document.querySelector('header') || document.querySelector('.header');
             if (header) {
                 header.appendChild(selector);
             } else {
-                // Dernier recours : ajouter au début du body
                 const wrapper = document.createElement('div');
                 wrapper.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 1000; background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);';
                 wrapper.appendChild(document.createTextNode('Version: '));
@@ -69,7 +57,6 @@
         }
     }
     
-    // Attendre que le DOM soit chargé
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', createVersionSelector);
     } else {

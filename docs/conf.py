@@ -6,14 +6,14 @@ from subprocess import check_output
 from jinja2 import Environment, FileSystemLoader
 
 # ============================================================================
-# Configuration sphinx-multiversion
+# sphinx-multiversion configuration
 # ============================================================================
-smv_tag_whitelist = r'^v\d+\.\d+$'  # Tags v2.0, v2.1, etc.
-smv_branch_whitelist = r'^v2\.[12]$'  # Branches v2.1 et v2.2 uniquement (exclut v2.0 qui n'a pas de docs)
+smv_tag_whitelist = r'^v\d+\.\d+$'
+smv_branch_whitelist = r'^v2\.[12]$'  # v2.1 and v2.2 only (v2.0 has no docs)
 smv_remote_whitelist = r'^origin$'
-smv_latest_version = 'v2.2'  # Version la plus récente
-smv_rename_latest_version = 'latest'  # Renomme v2.2 en "latest" dans la doc
-smv_outputdir_format = '{ref.name}'  # Format du dossier de sortie
+smv_latest_version = 'v2.2'
+smv_rename_latest_version = 'latest'
+smv_outputdir_format = '{ref.name}'
 
 # ============================================================================
 # Project information
@@ -22,14 +22,14 @@ project = u'VTL Documentation'
 copyright = u'SDMX Technical Working Group'
 author = u'SDMX-TWG'
 
-# Extraire la version depuis la branche Git actuelle
+# Extract version from current Git branch
 def get_version():
     try:
         branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode('utf-8').strip()
         match = re.match(r'v?(\d+\.\d+)', branch)
         if match:
             return match.group(1)
-        return "2.2"  # Version par défaut
+        return "2.2"  # Default version
     except:
         return "2.2"
 
@@ -44,7 +44,7 @@ extensions = [
     "sphinxcontrib.mermaid",
     "sphinxcontrib.plantuml",
     "sphinx_toolbox.collapse",
-    "sphinx_multiversion",  # Extension clé pour multi-version
+    "sphinx_multiversion",
 ]
 
 # ============================================================================
@@ -70,8 +70,8 @@ html_theme_options = {
     "collapse_navigation": False,
 }
 
-# Détecter le repository GitHub depuis l'environnement ou utiliser des valeurs par défaut
-github_user = os.getenv("GITHUB_REPOSITORY_OWNER", "votre-username")
+# Detect GitHub repository from environment or use defaults
+github_user = os.getenv("GITHUB_REPOSITORY_OWNER", "NicoLaval")
 github_repo = os.getenv("GITHUB_REPOSITORY", "Language-management-POC")
 if "/" in github_repo:
     github_user, github_repo = github_repo.split("/", 1)
@@ -85,7 +85,7 @@ html_context = {
 }
 
 # ============================================================================
-# PDF configuration (optionnel)
+# PDF configuration
 # ============================================================================
 pdf_documents = [
     ("index", f"VTL_{VERSION}_DOCS", f"VTL {VERSION} DOCS", "SDMX-TWG"),
@@ -98,12 +98,12 @@ plantuml = "java -jar " + os.getenv("PUML_PATH", "/tmp/plantuml.jar")
 plantuml_output_format = 'svg'
 
 # ============================================================================
-# Templates Jinja2 (si vous utilisez des templates)
+# Jinja2 templates
 # ============================================================================
 def name_norm(value):
     return re.sub("[^a-zA-Z0-9]", "", value)
 
-# Charger les templates si le dossier existe
+# Load templates if directory exists
 template_dir = Path("templates")
 if template_dir.exists():
     jinjaEnv = Environment(loader=FileSystemLoader(searchpath="templates"))
@@ -116,7 +116,7 @@ else:
     templates = {}
 
 # ============================================================================
-# Apply templates in each op type folder (si la structure existe)
+# Apply templates in each operator type folder
 # ============================================================================
 def apply_templates():
     operators_dir = Path("reference_manual/operators")
@@ -135,7 +135,6 @@ def apply_templates():
             if not examples_folder.exists():
                 continue
             
-            # Collect datasets
             ds_list = sorted(
                 x.stem for x in examples_folder.glob("ds_*.csv")
             )
@@ -147,7 +146,6 @@ def apply_templates():
                     "name": ds_name
                 })
             
-            # Collect examples
             ex_list = sorted(
                 x.stem for x in examples_folder.glob("ex_*.vtl")
             )
@@ -159,7 +157,6 @@ def apply_templates():
                     "name": ex_name
                 })
             
-            # Render examples
             if "examples" in templates:
                 examples_text = templates["examples"].render(
                     {
@@ -175,12 +172,12 @@ def apply_templates():
                 with open(op_folder / "examples.rst", "w") as f:
                     f.write(examples_text)
 
-# Appliquer les templates si on est dans un build normal (pas multiversion)
+# Apply templates if in normal build (not multiversion)
 if not os.getenv("SPHINX_MULTIVERSION_BUILD"):
     apply_templates()
 
 # ============================================================================
-# Setup function pour ajouter le sélecteur de version
+# Setup function
 # ============================================================================
 def setup(app):
     app.add_js_file('version-selector.js')
