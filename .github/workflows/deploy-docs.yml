@@ -53,6 +53,17 @@ jobs:
         env:
           SPHINX_MULTIVERSION_BUILD: "true"
 
+      - name: Verify latest directory exists
+        run: |
+          cd docs/_build/html
+          if [ ! -d "latest" ]; then
+            echo "Warning: latest directory not found, creating symlink to v2.2"
+            ln -s v2.2 latest || cp -r v2.2 latest
+          else
+            echo "✓ latest directory exists"
+          fi
+          ls -la | grep latest
+
       - name: Create root index.html with version selector
         run: |
           cd docs/_build/html
@@ -139,31 +150,31 @@ jobs:
               
               <ul class="version-list">
                 <li class="version-item">
-                  <a href="./latest/index.html">
+                  <a href="./latest/">
                     Latest (v2.2)
                     <span class="version-badge">Recommandé</span>
                   </a>
                   <div class="description">Version la plus récente avec toutes les fonctionnalités</div>
                 </li>
                 <li class="version-item">
-                  <a href="./v2.2/index.html">Version 2.2</a>
+                  <a href="./v2.2/">Version 2.2</a>
                   <div class="description">Documentation complète de la version 2.2</div>
                 </li>
                 <li class="version-item">
-                  <a href="./v2.1/index.html">Version 2.1</a>
+                  <a href="./v2.1/">Version 2.1</a>
                   <div class="description">Documentation de la version 2.1</div>
                 </li>
               </ul>
               
               <div class="auto-redirect">
-                <p>Redirection automatique vers <a href="./latest/index.html">la dernière version</a> dans 3 secondes...</p>
+                <p>Redirection automatique vers <a href="./latest/">la dernière version</a> dans 3 secondes...</p>
               </div>
             </div>
             
             <script>
-              // Auto-redirect après 3 secondes
+              // Auto-redirect after 3 seconds
               setTimeout(function() {
-                window.location.href = "./latest/index.html";
+                window.location.href = "./latest/";
               }, 3000);
             </script>
           </body>
