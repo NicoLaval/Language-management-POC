@@ -98,29 +98,23 @@ plantuml = "java -jar " + os.getenv("PUML_PATH", "/tmp/plantuml.jar")
 plantuml_output_format = 'svg'
 
 # ============================================================================
-# Jinja2 templates
+# Jinja2 templates (for operator examples generation in version branches)
 # ============================================================================
 def name_norm(value):
     return re.sub("[^a-zA-Z0-9]", "", value)
 
-# Load templates if directory exists
 template_dir = Path("templates")
+templates = {}
 if template_dir.exists():
     jinjaEnv = Environment(loader=FileSystemLoader(searchpath="templates"))
     jinjaEnv.filters["name_norm"] = name_norm
-    templates = {}
     for template in template_dir.glob("*"):
         if template.is_file():
             templates[template.name] = jinjaEnv.get_template(template.name)
-else:
-    templates = {}
 
-# ============================================================================
-# Apply templates in each operator type folder
-# ============================================================================
 def apply_templates():
     operators_dir = Path("reference_manual/operators")
-    if not operators_dir.exists():
+    if not operators_dir.exists() or not templates:
         return
     
     for op_type in operators_dir.iterdir():
@@ -135,44 +129,27 @@ def apply_templates():
             if not examples_folder.exists():
                 continue
             
-            ds_list = sorted(
-                x.stem for x in examples_folder.glob("ds_*.csv")
-            )
-            inputs = []
-            for i, ds_name in enumerate(ds_list, 1):
-                inputs.append({
-                    "folder": examples_folder,
-                    "i": i,
-                    "name": ds_name
-                })
+            ds_list = sorted(x.stem for x in examples_folder.glob("ds_*.csv"))
+            inputs = [{"folder": examples_folder, "i": i, "name": ds_name} 
+                     for i, ds_name in enumerate(ds_list, 1)]
             
-            ex_list = sorted(
-                x.stem for x in examples_folder.glob("ex_*.vtl")
-            )
-            examples = []
-            for i, ex_name in enumerate(ex_list, 1):
-                examples.append({
-                    "folder": examples_folder,
-                    "i": i,
-                    "name": ex_name
-                })
+            ex_list = sorted(x.stem for x in examples_folder.glob("ex_*.vtl"))
+            examples = [{"folder": examples_folder, "i": i, "name": ex_name} 
+                       for i, ex_name in enumerate(ex_list, 1)]
             
             if "examples" in templates:
-                examples_text = templates["examples"].render(
-                    {
-                        "examples": examples,
-                        "inputs": inputs,
-                        "op_type": op_type.name,
-                        "repourl_ex": f"https://github.com/{github_user}/{github_repo}/blob/{VERSION}/docs/reference_manual/operators",
-                    }
-                )
+                examples_text = templates["examples"].render({
+                    "examples": examples,
+                    "inputs": inputs,
+                    "op_type": op_type.name,
+                    "repourl_ex": f"https://github.com/{github_user}/{github_repo}/blob/{VERSION}/docs/reference_manual/operators",
+                })
                 if (examples_folder / "end_text.rst").exists():
                     examples_text += """.. include:: examples/end_text.rst"""
                 
                 with open(op_folder / "examples.rst", "w") as f:
                     f.write(examples_text)
 
-# Apply templates if in normal build (not multiversion)
 if not os.getenv("SPHINX_MULTIVERSION_BUILD"):
     apply_templates()
 
@@ -180,5 +157,5 @@ if not os.getenv("SPHINX_MULTIVERSION_BUILD"):
 # Setup function
 # ============================================================================
 def setup(app):
-    app.add_js_file('version-selector.js')
+    pass
 
