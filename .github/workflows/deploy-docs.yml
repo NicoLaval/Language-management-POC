@@ -1,0 +1,66 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - v2.0
+      - v2.1
+      - v2.2
+  workflow_dispatch:  # Permet de déclencher manuellement
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # ⚠️ CRUCIAL : Nécessaire pour sphinx-multiversion
+          # fetch-depth: 0 permet de récupérer tout l'historique Git
+          # sphinx-multiversion a besoin de toutes les branches pour fonctionner
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r docs/requirements.txt
+
+      - name: Setup PlantUML (si nécessaire)
+        run: |
+          wget -O /tmp/plantuml.jar https://github.com/plantuml/plantuml/releases/download/v1.2023.13/plantuml-1.2023.13.jar
+          echo "PUML_PATH=/tmp/plantuml.jar" >> $GITHUB_ENV
+
+      - name: Build documentation with sphinx-multiversion
+        run: |
+          cd docs
+          sphinx-multiversion . _build/html
+        env:
+          SPHINX_MULTIVERSION_BUILD: "true"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "./docs/_build/html"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
