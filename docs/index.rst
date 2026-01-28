@@ -1,37 +1,36 @@
 VTL Documentation
 ==================
 
-Bienvenue dans la documentation VTL (Validation and Transformation Language).
+Welcome to the VTL (Validation and Transformation Language) documentation.
 
-Versions disponibles
---------------------
+Available Versions
+------------------
 
-La documentation est disponible pour les versions suivantes :
+Documentation is available for the following versions:
 
-* :doc:`latest <latest/index>` - Version la plus récente (v2.2)
+* :doc:`latest <latest/index>` - Latest version (v2.2)
 * :doc:`v2.2 <v2.2/index>` - Version 2.2
 * :doc:`v2.1 <v2.1/index>` - Version 2.1
 
 .. note::
-   La version 2.0 ne contient pas de documentation Sphinx, uniquement la grammaire ANTLR.
+   Version 2.0 does not contain Sphinx documentation, only the ANTLR grammar.
 
 Navigation
 ----------
 
-Utilisez le sélecteur de version en haut à droite pour changer de version.
+Use the version selector in the top right corner to switch between versions.
 
-À propos
---------
+About
+-----
 
-VTL est un langage standard pour définir des règles de **validation** et de **transformation** 
-(pour tout type de données statistiques).
+VTL is a standard language for defining **validation** and **transformation** rules 
+(for any type of statistical data).
 
-VTL s'appuie sur la section Transformation du modèle d'information SDMX, en prenant les parties 
-communes de GSIM, SDMX et DDI pour la représentation des concepts et des données.
+VTL is based on the Transformation section of the SDMX Information Model, taking common 
+parts from GSIM, SDMX and DDI for the representation of concepts and data.
 
-Liens utiles
+Useful Links
 ------------
 
-* `Repository GitHub <https://github.com/sdmx-twg/vtl>`_
+* `GitHub Repository <https://github.com/sdmx-twg/vtl>`_
 * `SDMX Technical Working Group <https://sdmx.org>`_
-
