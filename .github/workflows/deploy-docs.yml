@@ -69,7 +69,7 @@ jobs:
           cd docs/_build/html
           cat > index.html << 'EOF'
           <!DOCTYPE html>
-          <html lang="fr">
+          <html lang="en">
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -145,29 +145,29 @@ jobs:
           <body>
             <div class="container">
               <h1>VTL Documentation</h1>
-              <p>Bienvenue dans la documentation VTL (Validation and Transformation Language).</p>
-              <p>Sélectionnez une version pour accéder à sa documentation :</p>
+              <p>Welcome to the VTL (Validation and Transformation Language) documentation.</p>
+              <p>Select a version to access its documentation:</p>
               
               <ul class="version-list">
                 <li class="version-item">
                   <a href="./latest/">
                     Latest (v2.2)
-                    <span class="version-badge">Recommandé</span>
+                    <span class="version-badge">Recommended</span>
                   </a>
-                  <div class="description">Version la plus récente avec toutes les fonctionnalités</div>
+                  <div class="description">Latest version with all features</div>
                 </li>
                 <li class="version-item">
                   <a href="./v2.2/">Version 2.2</a>
-                  <div class="description">Documentation complète de la version 2.2</div>
+                  <div class="description">Complete documentation for version 2.2</div>
                 </li>
                 <li class="version-item">
                   <a href="./v2.1/">Version 2.1</a>
-                  <div class="description">Documentation de la version 2.1</div>
+                  <div class="description">Documentation for version 2.1</div>
                 </li>
               </ul>
               
               <div class="auto-redirect">
-                <p>Redirection automatique vers <a href="./latest/">la dernière version</a> dans 3 secondes...</p>
+                <p>Redirecting to <a href="./latest/">the latest version</a> in 3 seconds...</p>
               </div>
             </div>
             
@@ -192,4 +192,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

@@ -1,18 +1,17 @@
-# Documentation Sphinx Multi-version
+# Sphinx Multi-version Documentation
 
-Ce dossier contient la configuration pour générer la documentation Sphinx multi-version de VTL.
+This directory contains the configuration to generate multi-version Sphinx documentation for VTL.
 
 ## Structure
 
 ```
 docs/
-├── conf.py              # Configuration Sphinx avec sphinx-multiversion
-├── index.rst           # Page d'accueil de la documentation
-├── requirements.txt    # Dépendances Python
-├── Makefile            # Commandes pour builder la doc
-├── _static/            # Fichiers statiques (CSS, JS)
-│   └── version-selector.js  # Sélecteur de version
-└── _templates/         # Templates Sphinx (optionnel)
+├── conf.py
+├── index.rst
+├── requirements.txt
+├── Makefile
+├── _static/
+└── _templates/
 ```
 
 ## Installation
@@ -23,49 +22,49 @@ pip install -r requirements.txt
 
 ## Build
 
-### Build toutes les versions (recommandé)
+### Build all versions (recommended)
 
 ```bash
 make html-multiversion
 ```
 
-Cela va :
-- Détecter automatiquement toutes les branches `v2.1`, `v2.2`
-- Builder la documentation de chaque version
-- Créer un dossier pour chaque version dans `_build/html/`
+This will:
+- Automatically detect all branches `v2.1`, `v2.2`
+- Build documentation for each version
+- Create a directory for each version in `_build/html/`
 
-### Build une seule version
+### Build single version
 
 ```bash
 make html
 ```
 
-## Test local
+## Local testing
 
-Après avoir buildé la documentation :
+After building the documentation:
 
 ```bash
 make serve
 ```
 
-Puis ouvrir http://localhost:8000 dans votre navigateur.
+Then open http://localhost:8000 in your browser.
 
-## Versions supportées
+## Supported versions
 
-- **v2.2** : Documentation complète (User Manual + Reference Manual)
-- **v2.1** : Documentation complète (User Manual + Reference Manual)
-- **v2.0** : Pas de documentation Sphinx (uniquement grammaire ANTLR)
+- **v2.2** : Complete documentation (User Manual + Reference Manual)
+- **v2.1** : Complete documentation (User Manual + Reference Manual)
+- **v2.0** : No Sphinx documentation (ANTLR grammar only)
 
 ## Configuration
 
-La configuration principale se trouve dans `conf.py` :
-- `smv_branch_whitelist` : Pattern pour sélectionner les branches
-- `smv_latest_version` : Version considérée comme la plus récente
-- `smv_rename_latest_version` : Nom donné à la version latest
+Main configuration is in `conf.py`:
+- `smv_branch_whitelist`: Pattern to select branches
+- `smv_latest_version`: Version considered as latest
+- `smv_rename_latest_version`: Name given to latest version
 
-## Déploiement
+## Deployment
 
-Le déploiement se fait automatiquement via GitHub Actions (voir `.github/workflows/deploy-docs.yml`).
+Deployment is automatic via GitHub Actions (see `.github/workflows/deploy-docs.yml`).
 
-Pour déployer manuellement, voir `../DEPLOY_GITHUB_PAGES.md`.
+For manual deployment, see `../DEPLOY_GITHUB_PAGES.md`.
 
