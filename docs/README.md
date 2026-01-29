@@ -64,7 +64,5 @@ Main configuration is in `conf.py`:
 
 ## Deployment
 
-Deployment is automatic via GitHub Actions (see `.github/workflows/deploy-docs.yml`).
-
-For manual deployment, see `../DEPLOY_GITHUB_PAGES.md`.
+Deployment is automatic via GitHub Actions (see `.github/workflows/deploy-docs.yml`). The workflow builds documentation on every push to version branches and deploys to GitHub Pages.
 
