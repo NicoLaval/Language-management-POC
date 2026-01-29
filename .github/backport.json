@@ -7,6 +7,11 @@
       "checked": true
     },
     {
+      "name": "develop",
+      "labels": ["backport-to-v2.2"],
+      "checked": true
+    },
+    {
       "name": "v2.1",
       "labels": ["backport-to-v2.1"],
       "checked": true
@@ -18,7 +23,7 @@
     }
   ],
   "labels": {
-    "backport-to-v2.2": "Backport to v2.2",
+    "backport-to-v2.2": "Backport to v2.2 and develop",
     "backport-to-v2.1": "Backport to v2.1",
     "backport-to-v2.0": "Backport to v2.0"
   }
