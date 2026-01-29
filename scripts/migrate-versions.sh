@@ -30,10 +30,19 @@ for VERSION in "${VERSIONS[@]}"; do
     echo "Processing version $VERSION..."
     echo "========================================="
     
-    # Create branch from main
+    # Create branch from develop (or main if develop doesn't exist)
     BRANCH_NAME="v$VERSION"
     echo "Creating branch $BRANCH_NAME..."
-    git checkout main
+    # Try develop first, fallback to main for migration scenarios
+    if git show-ref --verify --quiet refs/heads/develop; then
+        BASE_BRANCH="develop"
+    elif git show-ref --verify --quiet refs/heads/main; then
+        BASE_BRANCH="main"
+    else
+        echo "Error: Neither develop nor main branch exists"
+        exit 1
+    fi
+    git checkout "$BASE_BRANCH"
     git checkout -b "$BRANCH_NAME" 2>/dev/null || {
         echo "Branch $BRANCH_NAME already exists, checking it out..."
         git checkout "$BRANCH_NAME"
@@ -76,8 +85,12 @@ for VERSION in "${VERSIONS[@]}"; do
     echo "  Version $VERSION migrated successfully"
 done
 
-# Return to main
-git checkout main
+# Return to develop (or main if develop doesn't exist)
+if git show-ref --verify --quiet refs/heads/develop; then
+    git checkout develop
+else
+    git checkout main
+fi
 
 echo ""
 echo "========================================="
@@ -90,5 +103,5 @@ echo ""
 echo "Next steps:"
 echo "1. Review the branches: git branch"
 echo "2. Push branches to remote: git push -u origin --all"
-echo "3. Verify main is the default branch"
+echo "3. Verify develop is the default branch (or rename main to develop)"
 

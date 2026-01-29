@@ -32,9 +32,9 @@ The `Language-management-POC` project uses Git branches for version management:
 
 ```
 Language-management-POC/
-├── main/             # Root documentation setup
+├── develop/          # Primary development branch
 │   ├── docs/         # Sphinx multi-version configuration
-│   ├── .github/      # GitHub Actions workflow
+│   ├── .github/      # GitHub Actions workflows
 │   └── README.md
 ├── v2.0/ (branch)    # Version 2.0 content
 │   ├── src/
@@ -78,10 +78,15 @@ git clone https://github.com/YOUR-USERNAME/Language-management-POC.git
 cd Language-management-POC
 ```
 
-2. **Ensure you're on the `main` branch**:
+2. **Ensure you're on the `develop` branch** (or create it from current branch):
 
 ```bash
+# If main exists, rename it to develop
 git checkout main
+git branch -m main develop
+
+# Or if starting fresh
+git checkout -b develop
 ```
 
 ### Step 2: Run the Migration Script
@@ -105,14 +110,14 @@ chmod +x scripts/migrate-versions.sh
 ```
 
 The script will:
-- Checkout `main`
+- Checkout `develop`
 - For each version (2.0, 2.1, 2.2):
-  - Create a branch `v2.X` from `main`
+  - Create a branch `v2.X` from `develop`
   - Copy `src/` from `vtl/v2.X/src/`
   - Copy `docs/` from `vtl/v2.X/docs/` (if it exists)
   - Copy `pom.xml` from `vtl/v2.X/pom.xml` (if it exists)
   - Create a commit with the migrated content
-- Return to `main` branch
+- Return to `develop` branch
 
 **Note**: The script will skip `v2.0` if it doesn't have a `docs/` folder (which is expected).
 
@@ -139,7 +144,7 @@ git ls-tree -r v2.2 --name-only | grep "^docs/"
 
 ### Step 4: Set Up Multi-Version Documentation
 
-The `main` branch should already contain the Sphinx multi-version setup. If not, ensure you have:
+The `develop` branch should already contain the Sphinx multi-version setup. If not, ensure you have:
 
 1. **`docs/conf.py`** with `sphinx-multiversion` configuration:
 
@@ -180,8 +185,8 @@ git push origin --delete master
 ### Step 6: Commit and Push All Changes
 
 ```bash
-# Ensure you're on main
-git checkout main
+# Ensure you're on develop
+git checkout develop
 
 # Add all files
 git add docs/ .github/ *.md scripts/
@@ -192,8 +197,8 @@ git status
 # Commit
 git commit -m "Add Sphinx multi-version documentation setup"
 
-# Push main branch
-git push -u origin main
+# Push develop branch
+git push -u origin develop
 
 # Push all version branches
 git push -u origin v2.0
@@ -206,11 +211,11 @@ git push -u origin --all
 
 ### Step 7: Configure GitHub Repository
 
-1. **Set `main` as default branch**:
+1. **Set `develop` as default branch**:
    - Go to repository **Settings** → **Branches**
-   - Set **Default branch** to `main`
+   - Set **Default branch** to `develop`
    - If it's not set, click the change button next to the default branch
-   - Select `main` and confirm
+   - Select `develop` and confirm
 
 2. **Enable GitHub Pages**:
    - Go to repository **Settings** → **Pages**
@@ -290,7 +295,7 @@ https://YOUR-USERNAME.github.io/Language-management-POC/
 
 **The workflow doesn't trigger**
 - Verify that GitHub Pages is enabled with "GitHub Actions" as source
-- Verify that the file `.github/workflows/deploy-docs.yml` is present on `main`
+- Verify that the file `.github/workflows/deploy-docs.yml` is present on `develop`
 - Check permissions in repository settings
 
 **Documentation doesn't display**
@@ -313,7 +318,7 @@ https://YOUR-USERNAME.github.io/Language-management-POC/
 - Verify `environment: github-pages` is set in workflow file
 
 **Version selector not appearing**
-- Verify `docs/_templates/layout.html` exists on `main` branch
+- Verify `docs/_templates/layout.html` exists on `develop` branch
 - Check that `html_static_path = ['_static']` is in `docs/conf.py`
 - Clear browser cache and reload
 
@@ -366,7 +371,7 @@ git push origin v2.1
 
 4. **Branch management**:
    - Always work on version-specific branches for version-specific changes
-   - Use `main` branch only for documentation infrastructure changes
+   - Use `develop` branch for documentation infrastructure changes and latest version development
    - Never merge version branches into each other
 
 ## Migration Checklist
@@ -378,7 +383,7 @@ git push origin v2.1
 - [ ] `v2.1` and `v2.2` confirmed to have `docs/` folders
 - [ ] Old `master` branch removed (if it existed)
 - [ ] All branches pushed to remote
-- [ ] `main` set as default branch on GitHub
+- [ ] `develop` set as default branch on GitHub
 - [ ] GitHub Pages enabled with GitHub Actions source
 - [ ] Workflow runs successfully
 - [ ] Documentation accessible on GitHub Pages

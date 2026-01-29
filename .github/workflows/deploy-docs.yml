@@ -3,7 +3,7 @@ name: Build and Deploy Documentation
 on:
   push:
     branches:
-      - main
+      - develop
       - v2.0
       - v2.1
       - v2.2

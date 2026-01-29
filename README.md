@@ -15,9 +15,9 @@ This project demonstrates an alternative approach to managing multiple versions 
 
 ```
 Language-management-POC/
-├── main/             # Root branch with documentation infrastructure
+├── develop/          # Primary development branch (infrastructure + latest version)
 │   ├── docs/         # Sphinx multi-version configuration
-│   ├── .github/      # GitHub Actions workflow
+│   ├── .github/      # GitHub Actions workflows
 │   └── README.md
 ├── v2.0/ (branch)    # Version 2.0 - ANTLR grammar only
 ├── v2.1/ (branch)    # Version 2.1 - Source + documentation
@@ -77,7 +77,7 @@ make serve
 
 ## Migration Guide
 
-If you're migrating from the `vtl` project structure (versions as subdirectories) to this branch-based approach, see the comprehensive **[Migration Guide](MIGRATION.md)**.
+For teams migrating from the `vtl` project structure (versions as subdirectories) to this branch-based approach, see the comprehensive **[Migration Guide](MIGRATION.md)**.
 
 The migration guide covers:
 - Step-by-step migration process
@@ -108,24 +108,39 @@ The migration guide covers:
 
 ## Branch Strategy
 
-- **`main`**: Contains documentation infrastructure and configuration
+- **`develop`**: Primary development branch (infrastructure + latest version integration)
 - **`v2.0`, `v2.1`, `v2.2`**: Version-specific branches with source code and documentation
 - **Never merge version branches**: Each version branch is independent
 
+**Workflow:**
+- Latest version (v2.2): Feature branches → `develop` → PR → `v2.2`
+- Older versions (v2.0, v2.1): Feature branches → version branch directly
+- See [Version Management Guide](VERSION_MANAGEMENT.md#branch-strategy) for detailed workflow
+
+## Version Management
+
+This project uses automated change propagation between version branches. When fixes or improvements are made to one version, they can be automatically propagated to newer versions.
+
+See **[Version Management Guide](VERSION_MANAGEMENT.md)** for:
+- Automated backporting workflows
+- Label-based change propagation
+- Best practices for managing changes across versions
+- Setup instructions for GitHub Actions
+
 ## Contributing
 
-When contributing to a specific version:
+**For latest version (v2.2) - all changes:**
+1. Create feature branch from `develop`: `git checkout develop && git checkout -b feature/new-feature`
+2. Make changes (code, documentation, infrastructure, etc.)
+3. Create PR targeting `develop`
+4. After merge, create PR from `develop` → `v2.2` when ready for release
+5. Add backport labels on `develop` PRs if fixes should propagate to older versions
 
+**For older versions (v2.0, v2.1):**
 1. Checkout the version branch: `git checkout v2.1`
-2. Make your changes
-3. Commit and push: `git push origin v2.1`
-4. Documentation will rebuild automatically
-
-For infrastructure changes (Sphinx config, workflows, etc.):
-
-1. Work on `main` branch
-2. Commit and push: `git push origin main`
-3. All versions will rebuild with the new infrastructure
+2. Create feature branch: `git checkout -b fix/typo`
+3. Make changes and create PR targeting the version branch directly
+4. Add backport labels if fix should propagate forward to newer versions
 
 ## Related Projects
 
