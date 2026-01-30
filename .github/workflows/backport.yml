@@ -20,7 +20,7 @@ jobs:
       - name: Determine target branches from labels
         id: determine-branches
         run: |
-          TARGET_BRANCHES=""
+          TARGET_BRANCHES_JSON="[]"
           
           # Get labels as JSON and extract names
           LABELS_JSON='${{ toJSON(github.event.pull_request.labels) }}'
@@ -33,40 +33,63 @@ jobs:
           
           # Check for backport-to-v2.2 label (backport to v2.2 and develop)
           if echo "$LABEL_NAMES" | grep -qw "backport-to-v2.2"; then
-            TARGET_BRANCHES="v2.2,develop"
-            echo "Found backport-to-v2.2 label"
+            TARGET_BRANCHES_JSON='["v2.2","develop"]'
+            echo "Found backport-to-v2.2 label -> backport to v2.2 and develop"
           fi
           
           # Check for backport-to-v2.1 label (backport to v2.1)
           if echo "$LABEL_NAMES" | grep -qw "backport-to-v2.1"; then
-            if [ -n "$TARGET_BRANCHES" ]; then
-              TARGET_BRANCHES="$TARGET_BRANCHES,v2.1"
+            if [ "$TARGET_BRANCHES_JSON" = "[]" ]; then
+              TARGET_BRANCHES_JSON='["v2.1"]'
             else
-              TARGET_BRANCHES="v2.1"
+              # Merge arrays: add v2.1 to existing array
+              TARGET_BRANCHES_JSON=$(echo "$TARGET_BRANCHES_JSON" | jq '. + ["v2.1"]')
             fi
             echo "Found backport-to-v2.1 label"
           fi
           
           # Check for backport-to-v2.0 label (backport to v2.0)
           if echo "$LABEL_NAMES" | grep -qw "backport-to-v2.0"; then
-            if [ -n "$TARGET_BRANCHES" ]; then
-              TARGET_BRANCHES="$TARGET_BRANCHES,v2.0"
+            if [ "$TARGET_BRANCHES_JSON" = "[]" ]; then
+              TARGET_BRANCHES_JSON='["v2.0"]'
             else
-              TARGET_BRANCHES="v2.0"
+              # Merge arrays: add v2.0 to existing array
+              TARGET_BRANCHES_JSON=$(echo "$TARGET_BRANCHES_JSON" | jq '. + ["v2.0"]')
             fi
             echo "Found backport-to-v2.0 label"
           fi
           
-          if [ -z "$TARGET_BRANCHES" ]; then
+          if [ "$TARGET_BRANCHES_JSON" = "[]" ]; then
             echo "No backport labels found"
           else
-            echo "target_branches=$TARGET_BRANCHES" >> $GITHUB_OUTPUT
-            echo "Determined target branches: $TARGET_BRANCHES"
+            echo "target_branches_json=$TARGET_BRANCHES_JSON" >> $GITHUB_OUTPUT
+            echo "Determined target branches: $TARGET_BRANCHES_JSON"
           fi
 
-      - name: Backport
-        if: steps.determine-branches.outputs.target_branches != ''
+      - name: Backport to v2.2
+        if: contains(steps.determine-branches.outputs.target_branches_json, 'v2.2')
         uses: korthout/backport-action@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          target_branches: ${{ steps.determine-branches.outputs.target_branches }}
+          target_branches: v2.2
+
+      - name: Backport to develop
+        if: contains(steps.determine-branches.outputs.target_branches_json, 'develop')
+        uses: korthout/backport-action@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          target_branches: develop
+
+      - name: Backport to v2.1
+        if: contains(steps.determine-branches.outputs.target_branches_json, 'v2.1')
+        uses: korthout/backport-action@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          target_branches: v2.1
+
+      - name: Backport to v2.0
+        if: contains(steps.determine-branches.outputs.target_branches_json, 'v2.0')
+        uses: korthout/backport-action@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          target_branches: v2.0
