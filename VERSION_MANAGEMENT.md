@@ -1086,7 +1086,22 @@ The workflow does not automatically resolve conflicts.
 **Solutions:**
 - Verify branch names in configuration
 - Check GitHub token permissions
-- Resolve conflicts manually
+- Resolve conflicts manually (see Conflict Resolution below)
+
+### Conflict Resolution
+
+When backporting changes that modify `docs/index.rst`, conflicts may occur because version branches have different structures:
+- `develop`: Multi-version structure (for sphinx-multiversion)
+- `v2.X`: Simple structure (version-specific)
+
+**Manual Resolution:**
+1. The backport PR will show a conflict
+2. Resolve by keeping the target branch structure (v2.X format)
+3. Add the new Propagation test line(s) to the existing section
+4. Example: If backporting from v2.1 to v2.2, keep v2.2's structure and add the new test line
+
+**Automatic Resolution (Future):**
+A merge strategy in `.gitattributes` helps, but for `docs/index.rst` content conflicts, manual review is recommended to ensure proper RST formatting.
 
 ### Wrong Commits Propagated
 
