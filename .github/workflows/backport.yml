@@ -1,0 +1,16 @@
+name: Backport
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  backport:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Backport
+        uses: korthout/backport-action@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          backport_config_file: .github/backport.json
