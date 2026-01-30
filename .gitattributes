@@ -1,0 +1,4 @@
+# For version branches (v2.0, v2.1, v2.2), always keep their own structure
+# for docs/index.rst and docs/conf.py when merging from develop
+docs/index.rst merge=ours
+docs/conf.py merge=ours
