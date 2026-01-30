@@ -29,6 +29,12 @@ VTL is a standard language for defining **validation** and **transformation** ru
 VTL is based on the Transformation section of the SDMX Information Model, taking common 
 parts from GSIM, SDMX and DDI for the representation of concepts and data.
 
+Propagation test
+----------------
+
+**update develop and then 2.2**
+
+
 Useful Links
 ------------
 
