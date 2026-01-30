@@ -6,6 +6,7 @@ Propagation test (backport validation)
 --------------------------------------
 
 * **update develop**
+* **fix 2.1 and propagate to 2.2**
 
 .. toctree::
    :maxdepth: 1
