@@ -12,19 +12,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
       - name: Determine target branches from labels
         id: determine-branches
         run: |
-          LABELS="${{ github.event.pull_request.labels }}"
+          LABELS_JSON='${{ toJSON(github.event.pull_request.labels) }}'
           TARGET_BRANCHES=""
           
+          # Extract label names from JSON array
+          LABEL_NAMES=$(echo "$LABELS_JSON" | jq -r '.[].name' | tr '\n' ' ')
+          
+          echo "Detected labels: $LABEL_NAMES"
+          
           # Check for backport-to-v2.2 label (backport to v2.2 and develop)
-          if echo "$LABELS" | grep -q "backport-to-v2.2"; then
+          if echo "$LABEL_NAMES" | grep -q "backport-to-v2.2"; then
             TARGET_BRANCHES="v2.2,develop"
           fi
           
           # Check for backport-to-v2.1 label (backport to v2.1)
-          if echo "$LABELS" | grep -q "backport-to-v2.1"; then
+          if echo "$LABEL_NAMES" | grep -q "backport-to-v2.1"; then
             if [ -n "$TARGET_BRANCHES" ]; then
               TARGET_BRANCHES="$TARGET_BRANCHES,v2.1"
             else
@@ -33,7 +43,7 @@ jobs:
           fi
           
           # Check for backport-to-v2.0 label (backport to v2.0)
-          if echo "$LABELS" | grep -q "backport-to-v2.0"; then
+          if echo "$LABEL_NAMES" | grep -q "backport-to-v2.0"; then
             if [ -n "$TARGET_BRANCHES" ]; then
               TARGET_BRANCHES="$TARGET_BRANCHES,v2.0"
             else
