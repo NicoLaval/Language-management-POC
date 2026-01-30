@@ -1,0 +1,90 @@
+{% extends "!layout.html" %}
+
+{% block extrahead %}
+{{ super() }}
+<style>
+  .version-selector-wrapper {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  .version-selector-wrapper select {
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 140px;
+    color: #333;
+  }
+  .version-selector-wrapper select:hover {
+    border-color: #2980b9;
+  }
+  .version-selector-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+</style>
+{% endblock %}
+
+{% block sidebartitle %}
+{{ super() }}
+
+<div class="version-selector-wrapper">
+  <span class="version-selector-label">Version</span>
+  <select id="version-selector" onchange="switchVersion(this.value)">
+    <option value="latest">Latest (v2.2)</option>
+    <option value="v2.2">v2.2</option>
+    <option value="v2.1">v2.1</option>
+  </select>
+</div>
+
+<script>
+(function() {
+  const currentPath = window.location.pathname;
+  const versionMatch = currentPath.match(/\/(v\d+\.\d+|latest)\//);
+  const currentVersion = versionMatch ? versionMatch[1] : 'latest';
+  const availableVersions = ['latest', 'v2.2', 'v2.1'];
+  
+  const selector = document.getElementById('version-selector');
+  if (selector) {
+    selector.innerHTML = '';
+    availableVersions.forEach(version => {
+      const option = document.createElement('option');
+      option.value = version;
+      option.textContent = version === 'latest' ? 'Latest (v2.2)' : version;
+      if (version === currentVersion) {
+        option.selected = true;
+      }
+      selector.appendChild(option);
+    });
+  }
+  
+  window.switchVersion = function(version) {
+    if (versionMatch) {
+      const pathParts = currentPath.split('/');
+      const versionIndex = pathParts.findIndex(part => /^(v\d+\.\d+|latest)$/.test(part));
+      
+      if (versionIndex !== -1) {
+        pathParts[versionIndex] = version;
+        window.location.href = pathParts.join('/');
+      } else {
+        const basePath = currentPath.substring(0, currentPath.indexOf('/', 1));
+        const relativePath = currentPath.substring(currentPath.indexOf('/', currentPath.indexOf('/', 1) + 1));
+        window.location.href = basePath + '/' + version + relativePath;
+      }
+    } else {
+      const basePath = currentPath.split('/').slice(0, -2).join('/') || '';
+      window.location.href = basePath + '/' + version + '/index.html';
+    }
+  };
+})();
+</script>
+{% endblock %}
+
