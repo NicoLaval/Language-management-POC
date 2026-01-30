@@ -5,4 +5,5 @@ sphinxcontrib-mermaid>=0.8.0
 sphinxcontrib-plantuml>=0.3.0
 sphinx-toolbox>=3.0.0
 jinja2>=3.0.0
+rst2pdf>=0.100  # Required by sphinxcontrib-plantuml even if PDF generation is disabled
 
