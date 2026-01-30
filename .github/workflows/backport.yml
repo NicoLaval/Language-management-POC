@@ -20,39 +20,49 @@ jobs:
       - name: Determine target branches from labels
         id: determine-branches
         run: |
-          LABELS_JSON='${{ toJSON(github.event.pull_request.labels) }}'
           TARGET_BRANCHES=""
           
-          # Extract label names from JSON array
-          LABEL_NAMES=$(echo "$LABELS_JSON" | jq -r '.[].name' | tr '\n' ' ')
+          # Get labels as JSON and extract names
+          LABELS_JSON='${{ toJSON(github.event.pull_request.labels) }}'
+          echo "Labels JSON: $LABELS_JSON"
           
-          echo "Detected labels: $LABEL_NAMES"
+          # Extract label names using jq
+          LABEL_NAMES=$(echo "$LABELS_JSON" | jq -r '.[].name' 2>/dev/null || echo "")
+          
+          echo "Detected label names: $LABEL_NAMES"
           
           # Check for backport-to-v2.2 label (backport to v2.2 and develop)
-          if echo "$LABEL_NAMES" | grep -q "backport-to-v2.2"; then
+          if echo "$LABEL_NAMES" | grep -qw "backport-to-v2.2"; then
             TARGET_BRANCHES="v2.2,develop"
+            echo "Found backport-to-v2.2 label"
           fi
           
           # Check for backport-to-v2.1 label (backport to v2.1)
-          if echo "$LABEL_NAMES" | grep -q "backport-to-v2.1"; then
+          if echo "$LABEL_NAMES" | grep -qw "backport-to-v2.1"; then
             if [ -n "$TARGET_BRANCHES" ]; then
               TARGET_BRANCHES="$TARGET_BRANCHES,v2.1"
             else
               TARGET_BRANCHES="v2.1"
             fi
+            echo "Found backport-to-v2.1 label"
           fi
           
           # Check for backport-to-v2.0 label (backport to v2.0)
-          if echo "$LABEL_NAMES" | grep -q "backport-to-v2.0"; then
+          if echo "$LABEL_NAMES" | grep -qw "backport-to-v2.0"; then
             if [ -n "$TARGET_BRANCHES" ]; then
               TARGET_BRANCHES="$TARGET_BRANCHES,v2.0"
             else
               TARGET_BRANCHES="v2.0"
             fi
+            echo "Found backport-to-v2.0 label"
           fi
           
-          echo "target_branches=$TARGET_BRANCHES" >> $GITHUB_OUTPUT
-          echo "Determined target branches: $TARGET_BRANCHES"
+          if [ -z "$TARGET_BRANCHES" ]; then
+            echo "No backport labels found"
+          else
+            echo "target_branches=$TARGET_BRANCHES" >> $GITHUB_OUTPUT
+            echo "Determined target branches: $TARGET_BRANCHES"
+          fi
 
       - name: Backport
         if: steps.determine-branches.outputs.target_branches != ''
