@@ -4,6 +4,8 @@ Documentation for VTL v2.1
 
 **fix 2.1 only**
 
+**fix 2.1 and propagate to 2.2**
+
 .. toctree::
    :maxdepth: 1
 
