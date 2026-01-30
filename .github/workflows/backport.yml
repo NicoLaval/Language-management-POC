@@ -9,8 +9,44 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine target branches from labels
+        id: determine-branches
+        run: |
+          LABELS="${{ github.event.pull_request.labels }}"
+          TARGET_BRANCHES=""
+          
+          # Check for backport-to-v2.2 label (backport to v2.2 and develop)
+          if echo "$LABELS" | grep -q "backport-to-v2.2"; then
+            TARGET_BRANCHES="v2.2,develop"
+          fi
+          
+          # Check for backport-to-v2.1 label (backport to v2.1)
+          if echo "$LABELS" | grep -q "backport-to-v2.1"; then
+            if [ -n "$TARGET_BRANCHES" ]; then
+              TARGET_BRANCHES="$TARGET_BRANCHES,v2.1"
+            else
+              TARGET_BRANCHES="v2.1"
+            fi
+          fi
+          
+          # Check for backport-to-v2.0 label (backport to v2.0)
+          if echo "$LABELS" | grep -q "backport-to-v2.0"; then
+            if [ -n "$TARGET_BRANCHES" ]; then
+              TARGET_BRANCHES="$TARGET_BRANCHES,v2.0"
+            else
+              TARGET_BRANCHES="v2.0"
+            fi
+          fi
+          
+          echo "target_branches=$TARGET_BRANCHES" >> $GITHUB_OUTPUT
+          echo "Determined target branches: $TARGET_BRANCHES"
+
       - name: Backport
+        if: steps.determine-branches.outputs.target_branches != ''
         uses: korthout/backport-action@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          backport_config_file: .github/backport.json
+          target_branches: ${{ steps.determine-branches.outputs.target_branches }}
